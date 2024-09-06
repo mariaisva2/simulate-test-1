@@ -1,8 +1,17 @@
+import "./config/container";
 import express, {Express} from "express";
-import { configDotenv } from "dotenv";
+import routes from "./routes/routes";
+import Util from "./utils/util";
+import cors from "cors";
 
-configDotenv(); //Configuración para el manejo de las variables de entorno 
-const app:Express = express(); // Iniciar un proyecto con express
-app.use(express.json); //Middleware for permitir la transfernecia en formato json
-app.use("/api",); //Middleware de enrutamiento 
+const app: Express = express();
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,DELETE,UPDATE",
+    credentials: true
+}))
+const PORT: number = 3060;
+app.use(express.json());
+app.use("/api", routes);
 
+Util.startServer(app,PORT);
