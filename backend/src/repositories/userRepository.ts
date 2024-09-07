@@ -1,33 +1,32 @@
 import { injectable } from "tsyringe";
 import User from "../models/userModel";
 import { where } from "sequelize";
+import { IError } from "../interfaces/errorInterface";
 
 @injectable()
 export default class UserRepository{
-    async getUsers():Promise<User[] | {message: string, error:unknown}>{
-        try{
-            return await User.findAll();
-        }catch(error){
-            return ({message: "Error to connect model", error});
-        }
+    async getUsers():Promise<User[]>{
+        return await User.findAll();
     };
 
-    async getUserByEmail(email:string):Promise<User | null | {message: string, error: unknown}>{
-        try{
-            return await User.findOne({
-                where: {email}
-            })       
-        }catch(error){
-            return({message: "Error to connect model", error})
-        }
+    async getUserById(user_id:number):Promise<User | null>{
+        return await User.findOne({
+            where: {id: user_id}
+        })
     }
 
-    async postUsers(user:Partial<User>):Promise<User | {message: string, error: unknown}>{
-        try{
-            return await User.create(user);
-        }catch(error){
-            return ({message: "Error to connect model", error})
-        }
+    async getUserByEmail(email:string):Promise<User | null>{
+        return await User.findOne({
+            where: {email}
+        })       
+    }
+
+    async postUsers(user:Partial<User>):Promise<User>{
+        return await User.create(user);
+    }
+
+    async updateUser(userFound:Partial<User>, user:Partial<User>):Promise<User | undefined>{
+        return await userFound.update!(user);
     }
 
     
