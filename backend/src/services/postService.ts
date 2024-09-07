@@ -12,4 +12,8 @@ export default class PostService{
     async getPostById(post_id:number):Promise<Post | null> {
         return await this.postRepository.getPostById(post_id);
     }
+
+    async createPost(post:Partial<Post>):Promise<Post>{
+        return await this.postRepository.createPost(post);
+    }
 }
