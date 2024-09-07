@@ -6,7 +6,7 @@ import Like from "../models/likeModel";
 export default class LikeService{
     constructor(@inject(LikeRepository) private likeRepository: LikeRepository){}
 
-    async getLikes():Promise<Like[]>{
+    async getLikes():Promise<Like[] | undefined>{
         return await this.likeRepository.getLikes();
     };
     async getLikeById(like_id:number):Promise<Like | null>{

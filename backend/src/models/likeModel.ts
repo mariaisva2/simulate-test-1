@@ -1,5 +1,6 @@
 import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 import Spot from "./postModel";
+import Post from "./postModel";
 
 
 @Table({
@@ -20,10 +21,10 @@ export default class Like extends Model{
     })
     quantity!:number;
 
-    @ForeignKey(()=>Spot)
+    @ForeignKey(()=>Post)
     @Column({
         type: DataType.INTEGER,
         allowNull: false
     })
-    spot_id!: number
+    post_id!: number
 }

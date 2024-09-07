@@ -3,7 +3,7 @@ import Like from "../models/likeModel";
 
 @injectable()
 export default class LikeRepository{
-    async getLikes():Promise<Like[]>{
+    async getLikes():Promise<Like[] | undefined>{
         return await Like.findAll();
     };
 
