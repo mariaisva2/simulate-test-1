@@ -1,5 +1,5 @@
 import { AutoIncrement, Column, DataType, HasMany, Model, PrimaryKey, Table } from "sequelize-typescript";
-import Spot from "./spotModel";
+import Post from "./postModel";
 
 @Table({
     tableName: "users",
@@ -31,6 +31,6 @@ export default class User extends Model{
     })
     password!: string;
 
-    @HasMany(()=>Spot)
-    spots!: Spot[]
+    @HasMany(()=>Post)
+    spots!: Post[]
 }

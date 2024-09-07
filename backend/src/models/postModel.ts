@@ -3,10 +3,10 @@ import User from "./userModel";
 import Like from "./likeModel";
 
 @Table({
-    tableName: "spots",
+    tableName: "posts",
     timestamps: false
 })
-export default class Spot extends Model{
+export default class Post extends Model{
     @PrimaryKey
     @AutoIncrement
     @Column({

@@ -1,5 +1,5 @@
 import { AutoIncrement, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import Spot from "./spotModel";
+import Spot from "./postModel";
 
 
 @Table({

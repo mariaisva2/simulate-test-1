@@ -1,8 +1,8 @@
 import {Sequelize} from "sequelize-typescript";
 import { configDotenv } from "dotenv";
 import User from "../models/userModel";
-import Spot from "../models/spotModel";
 import Like from "../models/likeModel";
+import Post from "../models/postModel";
 
 configDotenv();
 
@@ -13,7 +13,7 @@ const sequelize:Sequelize = new Sequelize({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    models: [User, Spot, Like]
+    models: [User, Post, Like]
 });
 
 export default sequelize;

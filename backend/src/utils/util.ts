@@ -2,8 +2,6 @@ import { Express } from "express";
 import sequelize from "../config/db";
 import bcrypt from "bcrypt";
 import { IError } from "../interfaces/errorInterface";
-import { Json } from "sequelize/types/utils";
-import { ISpot } from "../interfaces/spotInterface";
 export default class Util{
     static async startServer(app: Express,PORT:number):Promise<void>{
         try{
@@ -27,15 +25,5 @@ export default class Util{
     }
     static async verifyPassword(password:string, passwordSave: string):Promise<boolean>{
         return bcrypt.compare(password, passwordSave);
-    }
-
-    static async fetchApi(url:string, options?: {method?: string, headers?: {}, body?:string}):Promise< ISpot[] | ISpot | IError>{
-        try{
-            const response = await fetch(url,options);
-            if(!response.ok)throw new Error("Error with the response");
-            return response.json();
-        }catch(error){
-            return ({message: "Error with the fetchApi", error})
-        }
     }
 }
