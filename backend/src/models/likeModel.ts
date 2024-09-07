@@ -13,6 +13,12 @@ export default class Like extends Model{
         type: DataType.INTEGER
     })
     id!:number;
+    
+    @Column({
+        type:DataType.INTEGER,
+        allowNull: false
+    })
+    quantity!:number;
 
     @ForeignKey(()=>Spot)
     @Column({

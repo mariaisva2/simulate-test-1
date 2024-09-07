@@ -45,13 +45,27 @@ export default class PostController{
 
     static async updatePost(req:Request, res:Response):Promise<void>{
         try{
+            const {id} = req.params;
+            const {title,description,user_id} = req.body;
+            const dataVerify = Util.verifyData(title,description,user_id);
+            if(!dataVerify){
+                res.status(400).json({message: "Is necesay all params title,description,user_id"});
+                return;
+            };
+            const postService = container.resolve(PostService);
+            await postService.updatePost(parseInt(id), {title,description,user_id});
+            res.status(200).json({message: "Updated post correctly"});
         }catch(error){
-            res.status(404).json({message: "Post not found"})
+            res.status(404).json({message: "Post not found"});
         }
     }
 
     static async deletePost(req:Request, res:Response):Promise<void>{
         try{
+            const {id} = req.params;
+            const postService = container.resolve(PostService);
+            await postService.deletePost(parseInt(id));
+            res.status(200).json({message: "Deleted post correctly"});
         }catch(error){
             res.status(404).json({message: "Post not found"})
         }

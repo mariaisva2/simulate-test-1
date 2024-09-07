@@ -5,6 +5,6 @@ const postRouter:Router = Router();
 postRouter.get("/", PostController.getPost);
 postRouter.get("/:id", PostController.getPostById);
 postRouter.post("/", PostController.createPost);
-postRouter.put("/:id");
-postRouter.delete("/:id");
+postRouter.put("/:id", PostController.updatePost);
+postRouter.delete("/:id", PostController.deletePost);
 export default postRouter;
