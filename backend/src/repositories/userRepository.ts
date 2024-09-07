@@ -29,5 +29,11 @@ export default class UserRepository{
         return await userFound.update!(user);
     }
 
+    async deleteUser(user_id:number):Promise<void>{
+        await User.destroy({
+            where: {id:user_id}
+        })
+    }
+
     
 }

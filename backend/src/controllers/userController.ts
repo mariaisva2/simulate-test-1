@@ -15,6 +15,16 @@ export default class UserController{
         }
     }
 
+    static async getUserById(req:Request, res:Response):Promise<void>{
+        try{
+            const userService = container.resolve(UserService);
+            const getUser = await userService.getUserById(parseInt(req.params.id));
+            res.status(200).json({messae: "User found", user: getUser})
+        }catch(error){
+            res.status(404).json({message: "Error to get user", error})
+        }
+    }
+
     static async createUser(req:Request, res:Response):Promise<void>{
         try{
             const {name,email,password} = req.body;
@@ -48,6 +58,16 @@ export default class UserController{
             res.status(200).json({message: "Updated user correctly", user: updatedUser})
         }catch(error){
             res.status(500).json({message: "Error to update user", error})
+        }
+    }
+
+    static async deleteUser(req:Request, res:Response):Promise<void>{
+        try{
+            const userService = container.resolve(UserService);
+            await userService.deleteUser(parseInt(req.params.id));
+            res.status(200).json({message: "Deleted user correctly"});
+        }catch(error){
+            res.status(500).json({message: "Error to delete user", error})
         }
     }
 }
