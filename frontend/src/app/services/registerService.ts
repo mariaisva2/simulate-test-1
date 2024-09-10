@@ -7,13 +7,12 @@ const registerUser = async (name: string, email: string, password: string) => {
     body: JSON.stringify({ name, email, password }), // Convertimos el nombre, email y password en un string JSON para enviarlo en el cuerpo de la petición
   });
 
-  // Si la respuesta no es satisfactoria (código de estado no en el rango 200-299)
   if (!response.ok) {
-    const errorData = await response.json(); // Extraemos los datos del error en formato JSON
-    throw new Error(errorData.message || 'Error en el registro'); // Lanzamos un error con un mensaje descriptivo
+    const errorData = await response.json(); 
+    throw new Error(errorData.message || 'Error en el registro'); 
   }
 
-  return response.json(); // Si la respuesta es satisfactoria, devolvemos los datos de la respuesta en formato JSON
+  return response.json(); 
 };
 
 export default registerUser;

@@ -1,8 +1,9 @@
-"use client";
+'use client';
+
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
-import RegisterForm from '../ui/RegisterForm';
+import RegisterForm from '../components/RegisterForm';
 import registerUser from '../services/registerService';
 
 const Container = styled.div`
@@ -25,7 +26,7 @@ const Title = styled.h2`
   text-align: center;
   font-size: 1.875rem;
   font-weight: 800;
-  color: #1f2937;
+  color: #8a2bb0;
 `;
 
 const LoginLink = styled.a`
@@ -33,23 +34,24 @@ const LoginLink = styled.a`
   font-weight: 500;
   color: #4f46e5;
   &:hover {
-    color: #4338ca;
+    color: #8a2bb0;
   }
 `;
 
 const RegisterPage: React.FC = () => {
-  const [error, setError] = useState('');
-  const router = useRouter();
+  const [error, setError] = useState<string>(''); // Estado para manejar los mensajes de error.
+  const router = useRouter(); // Inicializamos el hook useRouter para redireccionar al usuario.
 
+  // Función para manejar el registro.
   const handleRegister = async (name: string, email: string, password: string) => {
     try {
-      await registerUser(name, email, password);
-      router.push('/login');
+      await registerUser(name, email, password); // Llamamos a la función registerUser para registrar al usuario.
+      router.push('/login'); // Redirigimos al usuario a la página de inicio de sesión tras el registro exitoso.
     } catch (error) {
       if (error instanceof Error) {
-        setError(error.message);
+        setError(error.message); // Si ocurre un error, lo mostramos al usuario.
       } else {
-        setError('An unexpected error occurred');
+        setError('An unexpected error occurred'); // Mensaje genérico para errores inesperados.
       }
     }
   };
@@ -58,17 +60,15 @@ const RegisterPage: React.FC = () => {
     <Container>
       <FormWrapper>
         <div>
-          <Title>Crear una cuenta</Title>
+          <Title>Crear una cuenta</Title> {/* Título de la página de registro */}
         </div>
         <RegisterForm onSubmit={handleRegister} error={error} />
         <div className="text-center">
+          {/* Enlace para redirigir a la página de inicio de sesión */}
           <LoginLink href="/login">¿Ya tienes una cuenta? Inicia sesión</LoginLink>
         </div>
       </FormWrapper>
     </Container>
   );
 };
-
 export default RegisterPage;
-
-

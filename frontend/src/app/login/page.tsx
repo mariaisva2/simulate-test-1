@@ -1,20 +1,20 @@
 'use client';
+
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
-import loginUser from '../services/authService'; // Importamos el componente LoginForm.
-import LoginForm from '../ui/LoginForm'; // Importamos la función loginUser para autenticar al usuario.
-
+import loginUser from '../services/authService'; // Importamos la función loginUser para autenticar al usuario.
+import LoginForm from '../components/LoginForm'; // Importamos el componente LoginForm.
 
 const LoginPage: React.FC = () => {
-  const [error, setError] = useState(''); // Estado para manejar los mensajes de error.
+  const [error, setError] = useState<string>(''); // Estado para manejar los mensajes de error.
   const router = useRouter(); // Inicializamos el hook useRouter para redireccionar al usuario.
 
   // Función para manejar el inicio de sesión.
   const handleLogin = async (email: string, password: string) => {
     try {
-      const data = await loginUser(email, password); // Llamamos a la función loginUser para autenticar.
+      const data = await loginUser(email, password); // Pasamos los parámetros directamente.
       localStorage.setItem('token', data.token); // Guardamos el token en localStorage para persistencia.
       router.push('/home'); // Redirigimos al usuario a la página de inicio tras el login exitoso.
     } catch (err) {
@@ -26,7 +26,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Renderizamos el componente de la página de inicio de sesión.
   return (
     <Container>
       <FormWrapper>
@@ -51,14 +50,13 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f9fafb;
+  background-color: #ffffff;
   padding: 3rem 1rem;
 `;
 
 const FormWrapper = styled.div`
   max-width: 28rem;
   width: 100%;
-  space-y: 2rem;
 `;
 
 const Title = styled.h2`
@@ -66,14 +64,15 @@ const Title = styled.h2`
   text-align: center;
   font-size: 1.875rem;
   font-weight: 800;
-  color: #1f2937;
+  color: #8a2bb0;
 `;
 
 const LoginLink = styled(Link)`
   font-size: 0.875rem;
   font-weight: 500;
-  color: #4f46e5;
+  color: #8a2bb0;
   &:hover {
-    color: #4338ca;
+    color: #8a2bb0;
   }
 `;
+

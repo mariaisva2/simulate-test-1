@@ -1,3 +1,5 @@
+//Este componente será responsable de capturar los datos del usuario (nombre, correo electrónico, contraseña).
+"use client";
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -58,35 +60,44 @@ const ErrorText = styled.div`
   text-align: center;
 `;
 
-// Definición de la interfaz que describe las props que espera el componente LoginForm
-interface LoginFormProps {
-    // La función onSubmit recibe el email y la contraseña, y retorna una promesa vacía (Promise<void>)
-    onSubmit: (email: string, password: string) => Promise<void>;
-    // Una cadena de texto para mostrar mensajes de error
+// Definición de la interfaz que describe las props que espera el componente RegisterForm
+interface RegisterFormProps {
+   
+    onSubmit: (name: string, email: string, password: string) => void;
+
     error: string;
   }
   
-  // Definición del componente LoginForm como un Functional Component (React.FC)
-  // que recibe props de tipo LoginFormProps
-  const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, error }) => {
-    // Definimos dos estados locales para manejar los valores del email y la contraseña
-    const [email, setEmail] = useState(''); 
+  // Definición del componente RegisterForm como un Functional Component (React.FC)
+
+  const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, error }) => {
+  
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
   
     // Manejador del evento de envío del formulario
     const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault(); // Prevenir el comportamiento predeterminado del formulario (recargar la página)
-      onSubmit(email, password); // Llamar a la función onSubmit que se pasó como prop, pasando los valores del email y contraseña
+      e.preventDefault(); 
+      onSubmit(name, email, password); // Llamar a la función onSubmit que se pasó como prop, pasando los valores del nombre, email y contraseña
     };
   
     return (
       // Estructura del formulario
       <Form onSubmit={handleSubmit}>
-        {/* Mostrar el mensaje de error si existe */}
         {error && <ErrorText>{error}</ErrorText>}
         <input type="hidden" name="remember" defaultValue="true" />
-        {/* Grupo de inputs para el email y la contraseña */}
+    
         <InputGroup>
+          <Input
+            id="name"
+            name="name"
+            type="text"
+            required
+            placeholder="Nombre"
+            value={name} 
+            onChange={(e) => setName(e.target.value)} // Actualizar el estado cuando se cambie el valor del nombre
+          />
           <Input
             id="email-address"
             name="email"
@@ -94,24 +105,24 @@ interface LoginFormProps {
             autoComplete="email"
             required
             placeholder="Correo electrónico"
-            value={email} // Valor actual del email
+            value={email} 
             onChange={(e) => setEmail(e.target.value)} // Actualizar el estado cuando se cambie el valor del email
           />
           <Input
             id="password"
             name="password"
             type="password"
-            autoComplete="current-password"
+            autoComplete="new-password"
             required
             placeholder="Contraseña"
             value={password} // Valor actual de la contraseña
             onChange={(e) => setPassword(e.target.value)} // Actualizar el estado cuando se cambie el valor de la contraseña
           />
         </InputGroup>
-        {/* Botón para enviar el formulario */}
-        <SubmitButton type="submit">Iniciar sesión</SubmitButton>
+      
+        <SubmitButton type="submit">Registrarse</SubmitButton>
       </Form>
     );
   };
   
-  export default LoginForm;
+  export default RegisterForm;

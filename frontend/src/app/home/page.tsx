@@ -1,7 +1,11 @@
+
 "use client" // Indica que este componente se ejecuta en el lado del cliente.
+
 import React, { useEffect, useState } from 'react'; // Importamos React y los hooks useEffect y useState.
 import styled from 'styled-components'; // Importamos styled-components para aplicar estilos.
 import { useRouter } from 'next/navigation'; // Importamos useRouter de Next.js para manejar la navegación.
+
+
 
 interface Post {
   id: number;
@@ -12,7 +16,7 @@ interface Post {
 }
 
 // Creamos una clase PostModel que implementa la interfaz Post.
-// Esta clase se usa para manejar la lógica del modelo de datos.
+
 class PostModel implements Post {
   constructor(
     public id: number,
@@ -30,10 +34,11 @@ const HomePage: React.FC = () => {
   const [title, setTitle] = useState(''); // Estado para el título del nuevo post.
   const [description, setDescription] = useState(''); // Estado para la descripción del nuevo post.
   const [error, setError] = useState(''); // Estado para almacenar mensajes de error.
+  const [currentPostId, setCurrentPostId] = useState<number | null>(null); // ID del post en edición
+  const [isEditing, setIsEditing] = useState(false); // Para controlar si estamos editando
 
   // useEffect para cargar los posts al montar el componente.
   useEffect(() => {
-    // Verificamos si el token está en localStorage, si no, redirigimos al login.
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/login');
@@ -62,22 +67,6 @@ const HomePage: React.FC = () => {
     fetchPosts(); // Llamamos a la función para obtener los posts.
   }, [router]); // Este useEffect se ejecuta cuando el componente se monta o cuando cambia el router.
 
-  // Función para manejar el like/unlike en los posts.
-  const handleLike = (id: number) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === id
-          ? new PostModel(
-              post.id,
-              post.title,
-              post.description,
-              post.userHasLiked ? post.likes - 1 : post.likes + 1, // Incrementamos o decrementamos los likes.
-              !post.userHasLiked // Alternamos el estado de like/unlike.
-            )
-          : post
-      )
-    );
-  };
 
   // Función para manejar el agregado de un nuevo post.
   const handleAddPost = async () => {
@@ -104,7 +93,6 @@ const HomePage: React.FC = () => {
         }),
       });
 
-      // Si la respuesta es correcta, agregamos el nuevo post a la lista de posts.
       if (response.ok) {
         const newPost = await response.json();
         setPosts([newPost, ...posts]); // Agregamos el nuevo post al inicio de la lista.
@@ -120,25 +108,105 @@ const HomePage: React.FC = () => {
     }
   };
 
+  // Función para manejar la edición de un post
+  const handleEditPost = async () => {
+    if (!title || !description || currentPostId === null) {
+      setError('Por favor completa todos los campos.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch('http://localhost:3060/api/posts/${setCurrentPostId}', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, description }),
+      });
+
+      if (response.ok) {
+        // Actualizamos el estado del post editado
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === currentPostId ? new PostModel(post.id, title, description, post.likes, post.userHasLiked) : post
+          )
+        );
+        setIsEditing(false);
+        setCurrentPostId(null);
+        setTitle(''); // Reseteamos el campo título
+        setDescription(''); // Reseteamos el campo descripción
+      } else {
+        throw new Error('Error al editar el post');
+      }
+    } catch (error) {
+      console.error('Error editing post:', error);
+      setError('Error al editar el post');
+    }
+  };
+
+  // Función para cargar el post en el formulario de edición
+  const handleEdit = (post: PostModel) => {
+    setCurrentPostId(post.id);
+    setTitle(post.title);
+    setDescription(post.description);
+    setIsEditing(true);
+  };
+
+  // Función para manejar la eliminación de un post
+  const handleDeletePost = async (id: number) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3060/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        // Eliminamos el post del estado
+        setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+      } else {
+        throw new Error('Error al eliminar el post');
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      setError('Error al eliminar el post');
+    }
+  };
+
+
+
+  function handleLike(id: number): void {
+    throw new Error('Function not implemented.');
+  }
+
   // Renderizamos el componente.
   return (
     <Container>
       <Title>Publicaciones</Title>
       <FormContainer>
-        {error && <ErrorMessage>{error}</ErrorMessage>} {/* Si hay error, mostramos el mensaje */}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         <Input
           type="text"
           placeholder="Título"
           value={title}
-          onChange={(e) => setTitle(e.target.value)} // Actualizamos el estado del título al cambiar.
+          onChange={(e) => setTitle(e.target.value)}
         />
         <Input
           type="text"
           placeholder="Descripción"
           value={description}
-          onChange={(e) => setDescription(e.target.value)} // Actualizamos el estado de la descripción al cambiar.
+          onChange={(e) => setDescription(e.target.value)}
         />
-        <Button onClick={handleAddPost}>Agregar Post</Button> {/* Botón para agregar un nuevo post */}
+        {isEditing ? (
+          <Button onClick={handleEditPost}>Actualizar Post</Button>
+        ) : (
+          <Button onClick={handleAddPost}>Agregar Post</Button>
+        )}
       </FormContainer>
       <PostsContainer>
         {posts.map((post) => (
@@ -146,8 +214,10 @@ const HomePage: React.FC = () => {
             <PostTitle>{post.title}</PostTitle>
             <PostDescription>{post.description}</PostDescription>
             <LikeButton onClick={() => handleLike(post.id)}>
-              {post.userHasLiked ? 'Unlike' : 'Like'} ({post.likes}) {/* Botón para dar like/unlike */}
+              {post.userHasLiked ? 'Unlike' : 'Like'} ({post.likes})
             </LikeButton>
+            <EditButton onClick={() => handleEdit(post)}>Editar</EditButton>
+            <DeleteButton onClick={() => handleDeletePost(post.id)}>Eliminar</DeleteButton>
           </PostCard>
         ))}
       </PostsContainer>
@@ -175,7 +245,7 @@ const AddPostButton = styled.button`
   display: block;
   margin: 1rem auto;
   padding: 0.5rem 1rem;
-  background-color: #2b6cb0;
+  background-color: #8a2bb0;
   color: white;
   border: none;
   border-radius: 4px;
@@ -189,7 +259,7 @@ const AddPostButton = styled.button`
 const FormContainer = styled.form`
   margin-bottom: 2rem;
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #dddddd;
   border-radius: 8px;
   background-color: #f7fafc;
 `;
@@ -233,7 +303,7 @@ const PostsContainer = styled.div`
 
 const PostCard = styled.div`
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #b013a9;
   border-radius: 8px;
   background-color: #fff;
 `;
@@ -252,22 +322,22 @@ const PostDescription = styled.p`
 
 const LikeButton = styled.button`
   padding: 0.5rem 1rem;
-  background-color: #4c51bf;
+  background-color:  #ef7ae9;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #434190;
+    background-color:  #b013a9;
   }
     `;
 
 
 const Button = styled.button`
-background-color: #007bff;
+background-color:  #b013a9;
 color: white;
-padding: 10px 20px;
+padding: 10px 15px;
 border: none;
 border-radius: 5px;
 cursor: pointer;
@@ -275,12 +345,12 @@ font-size: 16px;
 transition: background-color 0.3s ease;
 
 &:hover {
-  background-color: #0056b3;
+  background-color: #dfaddc;
 }
 
 &:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(229, 97, 244, 0.5);
 }
 `;
 
@@ -290,6 +360,23 @@ color: red;
 margin-bottom: 10px;
 font-size: 14px;
 text-align: center;
+`;
+const EditButton = styled(Button)`
+  background-color: #ffc107; /* Color amarillo para el botón de editar */
+  margin-left: 10px;
+
+  &:hover {
+    background-color: #e0a800;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background-color: #dc3545; /* Color rojo para el botón de eliminar */
+  margin-left: 10px;
+
+  &:hover {
+    background-color: #c82333;
+  }
 `;
 
 
