@@ -7,7 +7,7 @@ import cors from "cors";
 const app: Express = express();
 app.use(cors({
     origin: "http://localhost:3000",
-    methods: "GET,POST,DELETE,UPDATE",
+    methods: "GET,POST,DELETE,UPDATE, PUT",
     credentials: true
 }))
 const PORT: number = 3060;
